@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Lee claude --output-format stream-json --verbose desde stdin.
-Extrae texto, limpia markdown, emite oraciones para TTS.
+Extrae texto, limpia markdown, emite oraciones en streaming para TTS.
 Guarda session_id en el archivo indicado como argv[1].
 """
 import sys, json, re
@@ -25,13 +25,19 @@ def clean(text):
     return text.strip()
 
 
-def split_sentences(text):
-    parts = re.split(r'(?<=[.!?])\s+', text)
-    return [p.strip() for p in parts if p.strip()]
+def emit_sentences(pending):
+    """Emite oraciones completas de pending, devuelve el resto."""
+    parts = re.split(r'(?<=[.!?])\s+', pending)
+    for s in parts[:-1]:
+        s = clean(s).strip()
+        if s:
+            print(s, flush=True)
+    return parts[-1] if parts else ""
 
 
 def main():
     session_file = sys.argv[1] if len(sys.argv) > 1 else None
+    pending = ""
 
     for raw in sys.stdin:
         line = raw.strip()
@@ -47,10 +53,10 @@ def main():
         if obj_type == "assistant":
             for block in obj.get("message", {}).get("content", []):
                 if block.get("type") == "text":
-                    text = block.get("text", "")
-                    if text:
-                        for sentence in split_sentences(clean(text)):
-                            print(sentence, flush=True)
+                    chunk = block.get("text", "")
+                    if chunk:
+                        pending += chunk
+                        pending = emit_sentences(pending)
 
         elif obj_type == "result":
             sid = obj.get("session_id")
@@ -60,6 +66,12 @@ def main():
                         f.write(sid)
                 except OSError:
                     pass
+
+    # Emitir lo que quede al final
+    if pending.strip():
+        s = clean(pending).strip()
+        if s:
+            print(s, flush=True)
 
 
 if __name__ == "__main__":

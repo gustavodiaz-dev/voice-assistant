@@ -13,7 +13,6 @@ THINKING="/tmp/voz-claude-thinking.pid"
 ULTIMA="/tmp/voz-claude-ultima.txt"
 NOTIF_FILE="/tmp/voz-claude-notif.id"
 
-SALUDOS=("Dime." "Te escucho." "Cuéntame." "Aquí estoy." "En qué te ayudo." "Adelante." "Sí, dime.")
 NADA=("No entendí nada." "No te escuché bien." "Repite, por favor." "No capté nada.")
 
 hablar() {
@@ -62,6 +61,11 @@ notif_clear() {
 
 aleatorio() { local arr=("$@"); echo "${arr[$((RANDOM % ${#arr[@]}))]}"; }
 
+beep() {
+    sox -n -t raw -r 22050 -e signed -b 16 -c 1 - synth 0.07 sine 880 gain -8 2>/dev/null \
+        | aplay -r 22050 -f S16_LE -t raw - 2>/dev/null
+}
+
 # ─── Punto de entrada ────────────────────────────────────────────────────────
 
 # Grabando → parar (continúa en la misma instancia del script)
@@ -82,7 +86,7 @@ fi
 trap 'rm -f "$AUDIO_FILE" "${AUDIO_FILE%.wav}.txt" "$LOCK" "$THINKING"; notif_clear' EXIT
 
 mkdir -p "$(dirname "$SESSION_FILE")"
-hablar "$(aleatorio "${SALUDOS[@]}")"
+beep
 
 notif "Escuchando..."
 timeout 60 pw-record --rate 16000 --channels 1 --format s16 "$AUDIO_FILE" 2>/dev/null &

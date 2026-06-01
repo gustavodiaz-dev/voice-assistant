@@ -8,7 +8,7 @@ os.makedirs(os.path.dirname(SOCK), exist_ok=True)
 if os.path.exists(SOCK):
     os.unlink(SOCK)
 
-model = WhisperModel("base", device="cpu", compute_type="int8", num_workers=1)
+model = WhisperModel("small", device="cpu", compute_type="int8", num_workers=1)
 
 def cleanup(*_):
     try: os.unlink(SOCK)
@@ -33,6 +33,7 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as srv:
                     path, language="es", beam_size=1,
                     vad_filter=True,
                     vad_parameters={"min_silence_duration_ms": 400},
+                    initial_prompt="Español latino. Transcripción directa sin formato.",
                 )
                 text = " ".join(s.text.strip() for s in segs).strip()
                 conn.sendall((text + "\n").encode())
