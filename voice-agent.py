@@ -263,10 +263,22 @@ def load_history(session_file: str) -> list:
         return []
 
 
+def _strip_images(messages: list) -> list:
+    result = []
+    for msg in messages:
+        content = msg.get("content", [])
+        if isinstance(content, list):
+            stripped = [b for b in content if b.get("type") != "image"]
+            result.append({**msg, "content": stripped or content})
+        else:
+            result.append(msg)
+    return result
+
+
 def save_history(messages: list, session_file: str) -> None:
     HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
     HISTORY_FILE.write_text(
-        json.dumps({"messages": messages}, ensure_ascii=False, indent=2)
+        json.dumps({"messages": _strip_images(messages)}, ensure_ascii=False, indent=2)
     )
     Path(session_file).touch()
 
