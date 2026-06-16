@@ -175,10 +175,10 @@ if echo "$LOWER" | grep -qE "mira|ves|pantalla|screen|qué hay|que hay|describe|
     FRAMES_DIR="/tmp/voz-claude-frames"
     rm -rf "$FRAMES_DIR" && mkdir -p "$FRAMES_DIR"
     notif "Grabando pantalla..."
-    wf-recorder -f "$FRAMES_DIR/clip.mp4" -d 3 2>/dev/null &
+    wf-recorder -c libx264 -f "$FRAMES_DIR/clip.mp4" 2>/dev/null &
     WFR_PID=$!
     sleep 3
-    kill "$WFR_PID" 2>/dev/null
+    kill -SIGINT "$WFR_PID" 2>/dev/null
     wait "$WFR_PID" 2>/dev/null
     ffmpeg -i "$FRAMES_DIR/clip.mp4" -vf "fps=5/3" "$FRAMES_DIR/frame%02d.png" -y 2>/dev/null
     FRAMES=$(ls "$FRAMES_DIR"/frame*.png 2>/dev/null | head -5 | tr '\n' ' ')
