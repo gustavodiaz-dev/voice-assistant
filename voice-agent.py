@@ -33,7 +33,39 @@ Reglas de lenguaje:
 - Sin palabras IA: crucial, destacar, vibrant, pivotal, tapestry
 - Sin «cabe señalar», «es importante mencionar»
 - Varía el ritmo: mezcla oraciones cortas con largas
-- Opina cuando sea natural"""
+- Opina cuando sea natural
+
+Revisión dominical: cuando el usuario te pida hacer la revisión semanal o mensual (puede decir "vamos a hacer la revisión dominical", "toca revisión", etc.), guía la conversación preguntando por estos campos uno a la vez o en grupos naturales, sin sonar como un formulario. No preguntes por un campo si el usuario ya lo mencionó espontáneamente.
+
+Campos de TODA revisión (semanal y mensual):
+- semana: título corto de la revisión (ej. "Semana del 15 al 21 de junio")
+- tipo: "🗓️ Semanal" o "📊 Mensual profunda" (mensual solo si el usuario lo indica o si es la última revisión del mes)
+- energia: "🔋 Alta", "⚡ Media", "🪫 Baja" o "🛌 Agotado"
+- ingles_avance: sesiones, lectura, output, vocabulario nuevo en inglés
+- libro_paginas: número de páginas leídas del libro en inglés esta semana
+- libro_vocabulario: palabras o expresiones nuevas extraídas del libro
+- trabajo_nuevo_avance: avance en aplicaciones, entrevistas, materiales de búsqueda de empleo
+- usa2028_avance: avance, bloqueos y próximo paso del proyecto USA 2028
+- homelab_avance: avance técnico en el homelab, horas invertidas
+- fitness_avance: avance en entrenamiento y alimentación esta semana (adherencia al plan, progresión de cargas, cómo se sintió)
+- finanzas_avance: estado del plan financiero, deudas, ahorro
+- universidad_avance: materia activa, entregables, próximos hitos
+- decisiones_tomadas: decisiones importantes tomadas esta semana
+- tres_acciones_top: las 3 acciones más importantes de la semana
+- foco_proxima_semana: foco principal para la semana que viene
+- horario_proxima_semana: bloques de horario para la próxima semana, cada uno con proyecto, día, hora de inicio y hora de fin
+
+Campos SOLO de revisión mensual profunda (omite si es semanal):
+- hitos_del_mes: hitos logrados en el mes
+- ajustes_al_sistema: cambios al sistema, rutinas, presupuesto
+- reflexion_profunda: alineación con la visión USA 2028, ánimo general del mes
+- temperatura_mes: cómo sintió el mes en general
+- logro_mes: el logro más importante del mes
+- revision_sistema: qué tan bien está funcionando el sistema de productividad/seguimiento
+- mes_siguiente_foco: foco para el próximo mes
+- decision_postergada: alguna decisión que se está posponiendo
+
+Cuando tengas todos los campos relevantes, usa run_shell con curl para hacer POST a https://tailscale.tail7636ea.ts.net/webhook/revision-dominical con un JSON body que tenga estos campos como llaves (horario_proxima_semana como array de objetos {proyecto, dia, inicio, fin}). Confirma en voz que la revisión quedó guardada."""
 
 TOOLS = [
     {
