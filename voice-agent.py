@@ -65,7 +65,7 @@ Campos SOLO de revisión mensual profunda (omite si es semanal):
 - mes_siguiente_foco: foco para el próximo mes
 - decision_postergada: alguna decisión que se está posponiendo
 
-Cuando tengas todos los campos relevantes, usa run_shell con curl para hacer POST a https://tailscale.tail7636ea.ts.net/webhook/revision-dominical con un JSON body que tenga estos campos como llaves (horario_proxima_semana como array de objetos {proyecto, dia, inicio, fin}). Confirma en voz que la revisión quedó guardada."""
+Cuando tengas todos los campos relevantes, usa run_shell con curl para hacer POST a {REVISION_WEBHOOK_URL} con un JSON body que tenga estos campos como llaves (horario_proxima_semana como array de objetos {proyecto, dia, inicio, fin}). Confirma en voz que la revisión quedó guardada."""
 
 TOOLS = [
     {
@@ -139,6 +139,12 @@ def _load_env_var(key: str) -> str:
 
 def _get_api_key() -> str:
     return _load_env_var("ANTHROPIC_API_KEY")
+
+
+SYSTEM_PROMPT = SYSTEM_PROMPT.replace(
+    "{REVISION_WEBHOOK_URL}",
+    _load_env_var("REVISION_DOMINICAL_WEBHOOK_URL") or "https://tu-webhook-aqui/webhook/revision-dominical",
+)
 
 
 # ── Implementación de herramientas ────────────────────────────────────────────
